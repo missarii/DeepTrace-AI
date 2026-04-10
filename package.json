@@ -1,0 +1,1 @@
+{"lint-staged": {"*.{ts,tsx}": ["eslint --fix", "prettier --write"], "*.py": ["ruff check --fix"]}}
