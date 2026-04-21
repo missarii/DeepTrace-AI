@@ -1,0 +1,12 @@
+# Implementation checklist
+- [x] Phase 1: monorepo, Docker Compose, CI, docs, env
+- [x] Phase 2: Prisma schema (all entities), Argon2id auth + refresh rotation, projects, ownership tests
+- [x] Phase 3: Tavily/Brave/mock search abstraction, SSRF-safe fetch, Trafilatura/BS4 extract, hash/chunk/dedup/RRF
+- [x] Phase 4: LangGraph workflow (13 nodes, bounded iteration, plan validation w/ retry, verify, gaps, synthesis, citation check), offline tests
+- [x] Phase 5: BullMQ worker, internal artifact callback, SSE + replay + heartbeat, cancel/retry
+- [x] Phase 6: report schema, synthesis from evidence, citation validation, viewer, Markdown + printable export
+- [x] Phase 7: landing/auth/dashboard/new/live/report/sources/evidence/graph/settings frontend
+- [x] Phase 8: SSRF + injection tests, rate limits, guards, tenant isolation, deletion control
+- [x] Phase 9: eval dataset v1 (7 kinds), runner (JSON/CSV/MD), baseline, docs
+- Verified: `py_compile` clean, `eval/runner.py` produces results/, 90+ files committed
+- Needs live env to fully run: `npm install`, `prisma migrate`, docker compose up, provider keys for real search
