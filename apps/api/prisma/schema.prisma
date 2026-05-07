@@ -1,0 +1,294 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  passwordHash String
+  name String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  projects Project[]
+  refreshTokens RefreshToken[]
+  settings UserSettings?
+  uploads UploadedDocument[]
+  auditEvents AuditEvent[]
+}
+model RefreshToken {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([userId])
+}
+model UserSettings {
+  id String @id @default(uuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chatProvider String @default("mock")
+  chatModel String @default("mock-1")
+  searchProvider String @default("mock")
+  maxIterations Int @default(2)
+  maxSearchCalls Int @default(16)
+  maxRunSeconds Int @default(600)
+  updatedAt DateTime @updatedAt
+}
+model Project {
+  id String @id @default(uuid())
+  ownerId String
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title String
+  description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  runs ResearchRun[]
+  @@index([ownerId, updatedAt])
+}
+model ResearchRun {
+  id String @id @default(uuid())
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  ownerId String
+  question String
+  depth String @default("standard")
+  objectives String[] @default([])
+  status String @default("queued")
+  idempotencyKey String? @unique
+  config Json @default("{}")
+  demo Boolean @default(false)
+  startedAt DateTime?
+  finishedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  plan ResearchPlan?
+  tasks ResearchTask[]
+  searches SearchExecution[]
+  sources Source[]
+  claims Claim[]
+  evidences Evidence[]
+  report ResearchReport?
+  events AgentEvent[]
+  usages ModelUsage[]
+  entities KnowledgeEntity[]
+  relations KnowledgeRelationship[]
+  @@index([ownerId, createdAt])
+  @@index([projectId, createdAt])
+}
+model ResearchPlan {
+  id String @id @default(uuid())
+  runId String @unique
+  run ResearchRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  primaryQuestion String
+  subquestions Json
+  objectives String[] @default([])
+  sourceTypes String[] @default([])
+  queries String[] @default([])
+  completionCriteria String[] @default([])
+  createdAt DateTime @default(now())
+}
+model ResearchTask {
+  id String @id @default(uuid())
+  runId String
+  run ResearchRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  kind String
+  label String
+  status String @default("pending")
+  detail Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([runId, status])
+}
+model SearchExecution {
+  id String @id @default(uuid())
+  runId String
+  run ResearchRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  provider String
+  query String
+  status String @default("ok")
+  resultCount Int @default(0)
+  latencyMs Int?
+  error String?
+  createdAt DateTime @default(now())
+  @@index([runId])
+}
+model Source {
+  id String @id @default(uuid())
+  runId String
+  run ResearchRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  canonicalUrl String
+  domain String
+  title String
+  sourceType String @default("web")
+  publishedAt DateTime?
+  retrievedAt DateTime @default(now())
+  contentHash String
+  relevance Float @default(0)
+  includeReason String?
+  excludeReason String?
+  extractStatus String @default("pending")
+  snapshot SourceSnapshot?
+  chunks DocumentChunk[]
+  evidences Evidence[]
+  @@unique([runId, canonicalUrl])
+  @@index([runId, relevance])
+}
+model SourceSnapshot {
+  id String @id @default(uuid())
+  sourceId String @unique
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  text String
+  metadata Json?
+  createdAt DateTime @default(now())
+}
+model DocumentChunk {
+  id String @id @default(uuid())
+  sourceId String
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  ordinal Int
+  text String
+  startOffset Int
+  endOffset Int
+  embedding Unsupported("vector(384)")?
+  createdAt DateTime @default(now())
+  @@index([sourceId, ordinal])
+}
+model Claim {
+  id String @id @default(uuid())
+  runId String
+  run ResearchRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  text String
+  category String @default("fact")
+  status String @default("unverified")
+  uncertainty String?
+  createdAt DateTime @default(now())
+  links ClaimEvidence[]
+  @@index([runId])
+}
+model Evidence {
+  id String @id @default(uuid())
+  runId String
+  run ResearchRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  sourceId String
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  passage String
+  chunkRef String?
+  startOffset Int?
+  endOffset Int?
+  relevance Float @default(0)
+  relation String @default("unverified")
+  verifyStatus String @default("unverified")
+  extractedAt DateTime @default(now())
+  provenance Json?
+  links ClaimEvidence[]
+  @@index([runId])
+  @@index([sourceId])
+}
+model ClaimEvidence {
+  claimId String
+  claim Claim @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  evidenceId String
+  evidence Evidence @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  relation String @default("supports")
+  @@id([claimId, evidenceId])
+}
+model ResearchReport {
+  id String @id @default(uuid())
+  runId String @unique
+  run ResearchRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  title String
+  summary String
+  methodology String
+  body Json
+  gaps String[] @default([])
+  limitations String[] @default([])
+  createdAt DateTime @default(now())
+  sections ReportSection[]
+  citations Citation[]
+}
+model ReportSection {
+  id String @id @default(uuid())
+  reportId String
+  report ResearchReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  ordinal Int
+  heading String
+  body String
+  @@index([reportId, ordinal])
+}
+model Citation {
+  id String @id @default(uuid())
+  reportId String
+  report ResearchReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  claimId String?
+  sourceId String
+  evidenceId String?
+  passage String
+  url String
+  @@index([reportId])
+}
+model AgentEvent {
+  id String @id @default(uuid())
+  runId String
+  run ResearchRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  seq Int
+  type String
+  payload Json
+  createdAt DateTime @default(now())
+  @@unique([runId, seq])
+  @@index([runId, seq])
+}
+model ModelUsage {
+  id String @id @default(uuid())
+  runId String
+  run ResearchRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  provider String
+  model String
+  promptTokens Int @default(0)
+  completionTokens Int @default(0)
+  estCostUsd Float @default(0)
+  createdAt DateTime @default(now())
+  @@index([runId])
+}
+model KnowledgeEntity {
+  id String @id @default(uuid())
+  runId String
+  run ResearchRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  name String
+  kind String
+  evidenceStatus String @default("unverified")
+  @@index([runId])
+}
+model KnowledgeRelationship {
+  id String @id @default(uuid())
+  runId String
+  run ResearchRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  fromId String
+  toId String
+  label String
+  evidenceStatus String @default("unverified")
+  sourceId String?
+  @@index([runId])
+}
+model UploadedDocument {
+  id String @id @default(uuid())
+  ownerId String
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  filename String
+  mime String
+  sizeBytes Int
+  text String?
+  pageRefs Json?
+  createdAt DateTime @default(now())
+  @@index([ownerId])
+}
+model AuditEvent {
+  id String @id @default(uuid())
+  userId String?
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action String
+  detail Json?
+  createdAt DateTime @default(now())
+  @@index([userId, createdAt])
+}
