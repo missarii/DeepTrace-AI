@@ -1,0 +1,5 @@
+# Local development overrides
+services:
+  api:
+    environment:
+      NODE_ENV: development
