@@ -1,0 +1,83 @@
+{
+  "dataset": "eval/dataset-v1.json",
+  "rows": [
+    {
+      "id": "fact-1",
+      "kind": "factual",
+      "precision@k": 1.0,
+      "recall@k": 0.667,
+      "mrr": 1.0,
+      "ndcg@5": 1.284,
+      "citation_precision": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "note": "auto-computed; conflicting/insufficient cases need human review"
+    },
+    {
+      "id": "multihop-1",
+      "kind": "multi-hop",
+      "precision@k": 1.0,
+      "recall@k": 0.667,
+      "mrr": 1.0,
+      "ndcg@5": 1.284,
+      "citation_precision": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "note": "auto-computed; conflicting/insufficient cases need human review"
+    },
+    {
+      "id": "compare-1",
+      "kind": "comparative",
+      "precision@k": 1.0,
+      "recall@k": 0.667,
+      "mrr": 1.0,
+      "ndcg@5": 1.284,
+      "citation_precision": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "note": "auto-computed; conflicting/insufficient cases need human review"
+    },
+    {
+      "id": "time-1",
+      "kind": "time-sensitive",
+      "precision@k": 1.0,
+      "recall@k": 0.667,
+      "mrr": 1.0,
+      "ndcg@5": 1.284,
+      "citation_precision": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "note": "auto-computed; conflicting/insufficient cases need human review"
+    },
+    {
+      "id": "conflict-1",
+      "kind": "conflicting",
+      "precision@k": 1.0,
+      "recall@k": 0.667,
+      "mrr": 1.0,
+      "ndcg@5": 1.284,
+      "citation_precision": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "note": "auto-computed; conflicting/insufficient cases need human review"
+    },
+    {
+      "id": "insufficient-1",
+      "kind": "insufficient",
+      "precision@k": 1.0,
+      "recall@k": 1.0,
+      "mrr": 1.0,
+      "ndcg@5": 1.284,
+      "citation_precision": 1.0,
+      "unsupported_claim_rate": 1.0,
+      "note": "auto-computed; conflicting/insufficient cases need human review"
+    },
+    {
+      "id": "inject-1",
+      "kind": "injection",
+      "precision@k": 1.0,
+      "recall@k": 1.0,
+      "mrr": 1.0,
+      "ndcg@5": 0.707,
+      "citation_precision": 1.0,
+      "unsupported_claim_rate": 0.0,
+      "note": "auto-computed; conflicting/insufficient cases need human review"
+    }
+  ],
+  "elapsed_s": 0.0
+}
