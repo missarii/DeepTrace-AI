@@ -1,0 +1,8 @@
+id,kind,precision@k,recall@k,mrr,ndcg@5,citation_precision,unsupported_claim_rate,note
+fact-1,factual,1.0,0.667,1.0,1.284,1.0,0.0,auto-computed; conflicting/insufficient cases need human review
+multihop-1,multi-hop,1.0,0.667,1.0,1.284,1.0,0.0,auto-computed; conflicting/insufficient cases need human review
+compare-1,comparative,1.0,0.667,1.0,1.284,1.0,0.0,auto-computed; conflicting/insufficient cases need human review
+time-1,time-sensitive,1.0,0.667,1.0,1.284,1.0,0.0,auto-computed; conflicting/insufficient cases need human review
+conflict-1,conflicting,1.0,0.667,1.0,1.284,1.0,0.0,auto-computed; conflicting/insufficient cases need human review
+insufficient-1,insufficient,1.0,1.0,1.0,1.284,1.0,1.0,auto-computed; conflicting/insufficient cases need human review
+inject-1,injection,1.0,1.0,1.0,0.707,1.0,0.0,auto-computed; conflicting/insufficient cases need human review
